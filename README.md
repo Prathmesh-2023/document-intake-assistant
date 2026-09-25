@@ -22,7 +22,7 @@ The assistant asks for personal-wishes details one question at a time, while acc
 | Safe updates | LLM output is parsed, validated, then merged only when valid. |
 | Live draft | The document preview is rendered directly from confirmed state. |
 | Mock mode | Regex-based development mode works without an API key. |
-| Live mode | Optional Groq client uses an OpenAI-compatible chat API. |
+| Groq mode | Primary LLM mode using an OpenAI-compatible chat API. |
 | Inspectable UI | The Details view makes confirmed and still-needed information visible. |
 
 ## Architecture
@@ -51,21 +51,21 @@ flowchart LR
 
 ```text
 app/
-??? main.py              # FastAPI routes and turn orchestration
-??? schema.py            # Pydantic API, state, and update models
-??? state.py             # In-memory sessions, merge logic, pending fields
-??? validation.py        # Schema and consistency checks
-??? document.py          # Deterministic draft renderer
-??? llm/
-    ??? interface.py     # Shared LLM contract
-    ??? mock_client.py   # Offline regex-based client
-    ??? real_client.py   # Groq-backed client
+|-- main.py              # FastAPI routes and turn orchestration
+|-- schema.py            # Pydantic API, state, and update models
+|-- state.py             # In-memory sessions, merge logic, pending fields
+|-- validation.py        # Schema and consistency checks
+|-- document.py          # Deterministic draft renderer
+`-- llm/
+    |-- interface.py     # Shared LLM contract
+    |-- mock_client.py   # Offline regex-based client
+    `-- real_client.py   # Groq-backed client
 frontend/
-??? index.html
-??? styles.css
-??? app.js
+|-- index.html
+|-- styles.css
+`-- app.js
 tests/
-??? test_core_flow.py    # Small, high-value regression suite
+`-- test_core_flow.py    # Small, high-value regression suite
 AI_LOG.md                # Development decisions and corrected iterations
 ```
 
@@ -81,16 +81,34 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 2. Start the API
+### 2. Configure and start the API
 
-Mock mode is the default and does not require an API key.
+Groq is the primary LLM mode. Copy the example environment file, add your key, then start the API:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+```dotenv
+LLM_PROVIDER=groq
+GROQ_API_KEY=your_key_here
+GROQ_MODEL=openai/gpt-oss-120b
+```
+
+```powershell
+python -m uvicorn app.main:app --reload
+```
+
+The API runs at `http://localhost:8000`. Interactive API documentation is available at `http://localhost:8000/docs`.
+
+### Mock development mode
+
+Mock mode is available for local development without an API key:
 
 ```powershell
 $env:LLM_PROVIDER = "mock"
 python -m uvicorn app.main:app --reload
 ```
-
-The API runs at `http://localhost:8000`. Interactive API documentation is available at `http://localhost:8000/docs`.
 
 ### 3. Start the frontend
 
@@ -103,22 +121,6 @@ python -m http.server 5500 --directory frontend
 Open `http://localhost:5500`.
 
 > The frontend base URL is defined once at the top of [`frontend/app.js`](frontend/app.js). Change `API_BASE` if the backend runs elsewhere.
-
-## Optional live LLM mode
-
-Copy the example environment file and add a Groq API key:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-```dotenv
-LLM_PROVIDER=groq
-GROQ_API_KEY=your_key_here
-GROQ_MODEL=openai/gpt-oss-120b
-```
-
-Then start the API normally. If Groq is selected without a usable key, the application falls back to mock mode.
 
 ## API overview
 
@@ -156,7 +158,7 @@ A message response includes:
 
 - **Pending-field anchoring:** short answers are interpreted against the active question, preventing a children-name answer from becoming executor data.
 - **Multi-detail turns:** explicitly stated details can be collected together after validation.
-- **Ambiguity is preserved:** statements such as ?my children are named after Melissa? do not invent names; the assistant asks for the actual names.
+- **Ambiguity is preserved:** statements such as "my children are named after Melissa" do not invent names; the assistant asks for the actual names.
 - **No raw internals in chat:** provider, parsing, and Pydantic errors are logged server-side and translated into a clear user-facing clarification.
 - **Draft rendering is deterministic:** no LLM call writes the final document text directly.
 
@@ -183,7 +185,7 @@ The core tests cover:
 
 - State and document updates after a confirmed value
 - Children-name extraction scoped to the active field
-- Ambiguous ?named after? phrasing
+- Ambiguous "named after" phrasing
 - Off-topic messages not mutating document state
 - Conversation history retention
 
