@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1c2430">
+  <title>Personal Wishes · Document Intake</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="workspace" aria-label="Personal Wishes Document assistant">
+    <section class="chat-pane" id="chat-pane" aria-labelledby="app-title">
+      <header class="chat-header">
+        <div class="brand-mark" aria-hidden="true">PW</div>
+        <div class="brand-copy">
+          <p class="eyebrow">A thoughtful record</p>
+          <h1 id="app-title">Personal Wishes</h1>
+        </div>
+        <div class="header-badges">
+          <span class="fiction-tag" id="provider-badge" aria-live="polite">Checking mode…</span>
+          <span class="fiction-tag">Fictional exercise</span>
+        </div>
+      </header>
+
+      <div class="chat-intro">
+        <span class="intro-rule" aria-hidden="true"></span>
+        <p>A few details, gathered at your pace. You can correct anything as we go.</p>
+      </div>
+
+      <div class="chat-log" id="chat-log" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Conversation">
+        <article class="message assistant-message">
+          <span class="message-label">Wishes assistant</span>
+          <p>Hello. I can help you put together a fictional Personal Wishes Document. What is your full name?</p>
+        </article>
+      </div>
+
+      <div class="chat-status" id="chat-status" role="status" aria-live="polite"></div>
+
+      <form class="composer" id="message-form">
+        <label for="message-input">Your message</label>
+        <div class="composer-row">
+          <input id="message-input" name="message" type="text" autocomplete="off" placeholder="Write a reply…" required disabled>
+          <button class="send-button" id="send-button" type="submit" aria-label="Send message" disabled>
+            <span>Send</span><span class="send-arrow" aria-hidden="true">↗</span>
+          </button>
+        </div>
+        <button class="mock-hint" id="mock-hint" type="button" hidden></button>
+        <p class="composer-note">Share only what you're comfortable including in this fictional draft.</p>
+      </form>
+    </section>
+
+    <section class="preview-pane" id="preview-pane" aria-labelledby="preview-title">
+      <header class="preview-header">
+        <div>
+          <p class="eyebrow">Your working copy</p>
+          <h2 id="preview-title">A living draft</h2>
+        </div>
+        <span class="draft-status"><span class="draft-dot" aria-hidden="true"></span> Updates as you talk</span>
+      </header>
+
+      <div class="view-tabs" role="tablist" aria-label="Preview views">
+        <button class="view-tab is-active" id="document-tab" type="button" role="tab" aria-selected="true" aria-controls="document-view" data-view="document-view">Document</button>
+        <button class="view-tab" id="details-tab" type="button" role="tab" aria-selected="false" aria-controls="details-view" data-view="details-view">Details <span class="tab-count" id="confirmed-count">0/8</span></button>
+      </div>
+
+      <div class="preview-content">
+        <section class="preview-view document-view is-visible" id="document-view" role="tabpanel" aria-labelledby="document-tab">
+          <div class="document-sheet">
+            <div class="document-topline">
+              <span class="document-kicker">Personal record</span>
+              <span class="document-index">Draft · 01</span>
+            </div>
+            <p class="legal-notice"><span class="notice-symbol" aria-hidden="true">!</span><span><strong>Fictional document · Not legal advice</strong><br>This exercise creates a demonstration draft only. It is not a legal document.</span></p>
+            <pre class="document-copy" id="document-copy">Your draft will take shape here as details are confirmed.</pre>
+            <div class="document-footer"><span>Prepared through conversation</span><span>For demonstration only</span></div>
+          </div>
+        </section>
+
+        <section class="preview-view details-view" id="details-view" role="tabpanel" aria-labelledby="details-tab" hidden>
+          <div class="details-heading">
+            <p class="document-kicker">State at a glance</p>
+            <h3>Information collected</h3>
+            <p>Only confirmed details are included in the draft.</p>
+          </div>
+          <div class="details-list" id="details-list" aria-live="polite">
+            <p class="details-placeholder">Starting your private session…</p>
+          </div>
+          <p class="details-footnote"><span class="legend-confirmed" aria-hidden="true"></span> Confirmed <span class="legend-unknown" aria-hidden="true"></span> Not yet provided</p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <nav class="mobile-switch" aria-label="Choose a workspace pane">
+    <button type="button" class="mobile-switch-button is-active" data-pane="chat-pane" aria-pressed="true">Conversation</button>
+    <button type="button" class="mobile-switch-button" data-pane="preview-pane" aria-pressed="false">Preview</button>
+  </nav>
+</body>
+</html>
