@@ -81,7 +81,21 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 2. Configure and start the API
+### 2. Get a Groq API key
+
+Groq mode requires a Groq API key.
+
+1. Create an account on [GroqCloud](https://console.groq.com/).
+2. Open the [Groq API Keys page](https://console.groq.com/keys).
+3. Click **Create API Key**.
+4. Give the key a name, for example `personal-wishes-intake`.
+5. Copy the generated API key.
+
+> **Security:** Keep your API key private. Do not commit it to GitHub or place it directly in your source code. This project reads it from the `GROQ_API_KEY` environment variable.
+
+> **No API key?** You can still run the project using `mock` mode. See [Mock development mode](#mock-development-mode).
+
+### 3. Configure and start the API
 
 Groq is the primary LLM mode. Copy the example environment file, add your key, then start the API:
 
@@ -110,7 +124,7 @@ $env:LLM_PROVIDER = "mock"
 python -m uvicorn app.main:app --reload
 ```
 
-### 3. Start the frontend
+### 4. Start the frontend
 
 In a second terminal:
 
